@@ -96,7 +96,7 @@ StopWDT     mov.w   #WDTPW|WDTHOLD,&WDTCTL  ; Stop watchdog timer
 ;				- destination no change
 ;				- source increment
 ;				- word to word transfers
-			mov.w	#DMADT_4+DMADSTINCR_0+DMASRCINCR_3+DMASWDW+DMAEN, &DMA0CTL
+;			mov.w	#DMADT_4+DMADSTINCR_0+DMASRCINCR_3+DMASWDW+DMAEN, &DMA0CTL
 ;			mov.w	#DMADT_4+DMADSTINCR_0+DMASRCINCR_3+DMASWDW+DMAEN, &DMA1CTL
 			mov.w	#DMADT_4+DMADSTINCR_0+DMASRCINCR_3+DMASWDW+DMAEN, &DMA1CTL
 
@@ -107,7 +107,9 @@ StopWDT     mov.w   #WDTPW|WDTHOLD,&WDTCTL  ; Stop watchdog timer
 ;			mov.w	#10, &MPY_OP1
 ;			bis.w	#DMAREQ, &DMA1CTL
 
-			mov.w	#0, &MPY_OP1
+			mov.w	#0,	R13
+
+			mov.w	#1, &MAC_OP1
 			mov.w	#0, &MPY_OP2
 
 ;			mov.w	#0, &MPY_OP1
@@ -116,16 +118,58 @@ StopWDT     mov.w   #WDTPW|WDTHOLD,&WDTCTL  ; Stop watchdog timer
 ;			mov.w	#0, &MPY_OP1
 ;			mov.w	#0, &MPY_OP2
 
-			mov.w	&RESULT, R15
-			mov.w	&RESULT, R15
-			mov.w	&RESULT, R15
-			mov.w	&RESULT, R15
-			mov.w	&RESULT, R15
+
+			nop
+			nop
+			nop
+			nop
+			nop
+			nop
+			nop
+			nop
+			nop
+			nop
+			nop
+			nop
+			nop
+			nop
+			nop
+			nop
+			nop
+			nop
+			nop
+			nop
+			nop
+			nop
+
+			add.w	&RESULT, R15
+			add.w	&RESULT, R14
+			add.w	&RESULT, R13
+			add.w	&RESULT, R12
+			add.w	&RESULT, R10
+
+
 			mov.w	&RESULT, R15
 			mov.w	&c, R15
 			mov.w	&c, R15
 			mov.w	&c, R15
 			mov.w	&c, R15
+
+
+
+			add.w	#1,R13
+			add.w	#1,R13
+			add.w	#1,R13
+			add.w	#1,R13
+			add.w	#1,R13
+			add.w	#1,R13
+			add.w	#1,R13
+			add.w	#1,R13
+			add.w	#1,R13
+			add.w	#1,R13
+
+
+
 ;-------------------------------------------------------------------------------
 ; Stack Pointer definition
 ;-------------------------------------------------------------------------------
