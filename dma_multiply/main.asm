@@ -67,29 +67,29 @@ StopWDT     mov.w   #WDTPW|WDTHOLD,&WDTCTL  ; Stop watchdog timer
 			mov.w	#0, &c
 
 ;			Set up DMA source registers
-			mov.w	#RESULT, &DMA0SAL
-;           mov.w 	#a, &DMA0SAL
+;			mov.w	#RESULT, &DMA0SAL
+			mov.w 	#a, &DMA0SAL
             mov.w	#0, &DMA0SAH
             mov.w	#b, &DMA1SAL
             mov.w	#0, &DMA1SAH
 
 ;			Set up the DMA destination registers
 ;			Higher-priority channel (a) feeds the first operand
-			mov.w	#c, &DMA0DAL
-;			mov.w	#MPY_OP1, &DMA0DAL
+;			mov.w	#c, &DMA0DAL
+			mov.w	#MAC_OP1, &DMA0DAL
 			mov.w	#0, &DMA0DAH
 ;			Lower-priority channel (b) controls the multiplier
 			mov.w	#MPY_OP2, &DMA1DAL
 			mov.w	#0, &DMA1DAH
 
 ;			Set the size of the transfer: for now, do everything
-			mov.w	#5, &DMA0SZ
-			mov.w	#5, &DMA1SZ
+			mov.w	#3, &DMA0SZ
+			mov.w	#3, &DMA1SZ
 
 ;			Set up the DMA triggers (see table 6-12 in datasheet)
 ;			Both channels are triggered by Hardware Multiply
-;			mov.w	#DMA0TSEL_29+DMA1TSEL_29, &DMACTL0
-			mov.w	#DMA0TSEL_29+DMA1TSEL_0, &DMACTL0
+			mov.w	#DMA0TSEL_29+DMA1TSEL_29, &DMACTL0
+;			mov.w	#DMA0TSEL_29+DMA1TSEL_0, &DMACTL0
 
 ;			Set control bits for both channels:
 ;				- repeated single mode transfer
@@ -104,8 +104,11 @@ StopWDT     mov.w   #WDTPW|WDTHOLD,&WDTCTL  ; Stop watchdog timer
 ;			Trigger the process by multiplying 0x0. This clears the accumulator
 ;			and causes the MPY DMA trigger to occur
 ;
-			mov.w	#10, &MPY_OP1
-			bis.w	#DMAREQ, &DMA1CTL
+;			mov.w	#10, &MPY_OP1
+;			bis.w	#DMAREQ, &DMA1CTL
+
+			mov.w	#0, &MPY_OP1
+			mov.w	#0, &MPY_OP2
 
 ;			mov.w	#0, &MPY_OP1
 ;			mov.w	#0, &MPY_OP2
@@ -113,10 +116,12 @@ StopWDT     mov.w   #WDTPW|WDTHOLD,&WDTCTL  ; Stop watchdog timer
 ;			mov.w	#0, &MPY_OP1
 ;			mov.w	#0, &MPY_OP2
 
-;			mov.w	#0, &MPY_OP1
-;			mov.w	#0, &MPY_OP2
-
-			mov.w	&c, R15
+			mov.w	&RESULT, R15
+			mov.w	&RESULT, R15
+			mov.w	&RESULT, R15
+			mov.w	&RESULT, R15
+			mov.w	&RESULT, R15
+			mov.w	&RESULT, R15
 			mov.w	&c, R15
 			mov.w	&c, R15
 			mov.w	&c, R15
