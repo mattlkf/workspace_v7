@@ -16,11 +16,11 @@
 	.align	2
 	.elfsym	a,SYM_SIZE(10)
 a:
-	.bits	3,16			; a[0] @ 0
-	.bits	1,16			; a[1] @ 16
-	.bits	2,16			; a[2] @ 32
-	.bits	3,16			; a[3] @ 48
-	.bits	4,16			; a[4] @ 64
+	.bits	1,16			; a[0] @ 0
+	.bits	2,16			; a[1] @ 16
+	.bits	3,16			; a[2] @ 32
+	.bits	4,16			; a[3] @ 48
+	.bits	5,16			; a[4] @ 64
 
 ;	int b[5] = {5,6,7,8,9};
 	.global	b
@@ -29,11 +29,11 @@ a:
 	.align	2
 	.elfsym	b,SYM_SIZE(10)
 b:
-	.bits	5,16			; b[0] @ 0
-	.bits	6,16			; b[1] @ 16
-	.bits	7,16			; b[2] @ 32
-	.bits	8,16			; b[3] @ 48
-	.bits	9,16			; b[4] @ 64
+	.bits	6,16			; b[0] @ 0
+	.bits	7,16			; b[1] @ 16
+	.bits	8,16			; b[2] @ 32
+	.bits	9,16			; b[3] @ 48
+	.bits	10,16			; b[4] @ 64
 
 ;	int c[10];
 	.global	c
@@ -82,7 +82,7 @@ StopWDT     mov.w   #WDTPW|WDTHOLD,&WDTCTL  ; Stop watchdog timer
 ;			Set up the DMA triggers (see table 6-12 in datasheet)
 ;			Both channels are triggered by Hardware Multiply
 ;			mov.w	#DMA0TSEL_29+DMA1TSEL_29, &DMACTL0
-			mov.w	#DMA0TSEL_29, &DMACTL0
+			mov.w	#DMA0TSEL_0+DMA1TSEL_0, &DMACTL0
 
 ;			Set control bits for both channels:
 ;				- repeated single mode transfer
@@ -90,18 +90,23 @@ StopWDT     mov.w   #WDTPW|WDTHOLD,&WDTCTL  ; Stop watchdog timer
 ;				- source increment
 ;				- word to word transfers
 			mov.w	#DMADT_4+DMADSTINCR_0+DMASRCINCR_3+DMASWDW+DMAEN, &DMA0CTL
+;			mov.w	#DMADT_4+DMADSTINCR_0+DMASRCINCR_3+DMASWDW+DMAEN, &DMA1CTL
 			mov.w	#DMADT_4+DMADSTINCR_0+DMASRCINCR_3+DMASWDW+DMAEN, &DMA1CTL
 
 
 ;			Trigger the process by multiplying 0x0. This clears the accumulator
 ;			and causes the MPY DMA trigger to occur
 
-			mov.w	#0, &MPY_OP1
-			mov.w	#0, &MPY_OP2
+			bis.w	#DMAREQ, &DMA0CTL
 
-;			Here the DMA should happen..
-;			Copy the result to R4
-;			mov.w	&RESULT, R4
+;			mov.w	#0, &MPY_OP1
+;			mov.w	#0, &MPY_OP2
+
+;			mov.w	#0, &MPY_OP1
+;			mov.w	#0, &MPY_OP2
+
+;			mov.w	#0, &MPY_OP1
+;			mov.w	#0, &MPY_OP2
 
 			mov.w	&c, R4
 			mov.w	&c, R4
