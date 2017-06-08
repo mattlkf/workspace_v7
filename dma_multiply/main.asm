@@ -35,9 +35,9 @@ b:
 	.bits	8,16			; b[3] @ 48
 	.bits	9,16			; b[4] @ 64
 
-;	int c[4];
+;	int c[10];
 	.global	c
-	.common	c,8,2
+	.common	c,20,2
 
 MPY_OP1		.equ	0x04C0
 MAC_OP1		.equ	0x04C4 	; first operand for multiply-accumulate
@@ -68,7 +68,8 @@ StopWDT     mov.w   #WDTPW|WDTHOLD,&WDTCTL  ; Stop watchdog timer
 
 ;			Set up the DMA destination registers
 ;			Higher-priority channel (a) feeds the first operand
-			mov.w	#MPY_OP1, &DMA0DAL
+			mov.w	#c, &DMA0DAL
+;			mov.w	#MPY_OP1, &DMA0DAL
 			mov.w	#0, &DMA0DAH
 ;			Lower-priority channel (b) controls the multiplier
 			mov.w	#MPY_OP2, &DMA1DAL
@@ -80,20 +81,33 @@ StopWDT     mov.w   #WDTPW|WDTHOLD,&WDTCTL  ; Stop watchdog timer
 
 ;			Set up the DMA triggers (see table 6-12 in datasheet)
 ;			Both channels are triggered by Hardware Multiply
-			mov.w	#DMA0TSEL_29+DMA1TSEL_29, &DMACTL0
+;			mov.w	#DMA0TSEL_29+DMA1TSEL_29, &DMACTL0
+			mov.w	#DMA0TSEL_29, &DMACTL0
 
 ;			Set control bits for both channels:
 ;				- repeated single mode transfer
 ;				- destination no change
 ;				- source increment
 ;				- word to word transfers
-			mov.w	#DMADT_4+DMADSTINCR_0+DMASRCINCR_3+DMASWDW+DMAEN, &DMACTL0
-			mov.w	#DMADT_4+DMADSTINCR_0+DMASRCINCR_3+DMASWDW+DMAEN, &DMACTL1
+			mov.w	#DMADT_4+DMADSTINCR_0+DMASRCINCR_3+DMASWDW+DMAEN, &DMA0CTL
+			mov.w	#DMADT_4+DMADSTINCR_0+DMASRCINCR_3+DMASWDW+DMAEN, &DMA1CTL
 
 
-;
+;			Trigger the process by multiplying 0x0. This clears the accumulator
+;			and causes the MPY DMA trigger to occur
 
-			nop
+			mov.w	#0, &MPY_OP1
+			mov.w	#0, &MPY_OP2
+
+;			Here the DMA should happen..
+;			Copy the result to R4
+;			mov.w	&RESULT, R4
+
+			mov.w	&c, R4
+			mov.w	&c, R4
+			mov.w	&c, R4
+			mov.w	&c, R4
+			mov.w	&c, R4
 ;-------------------------------------------------------------------------------
 ; Stack Pointer definition
 ;-------------------------------------------------------------------------------
