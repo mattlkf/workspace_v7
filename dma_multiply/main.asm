@@ -134,30 +134,37 @@ StopWDT     mov.w   #WDTPW|WDTHOLD,&WDTCTL  ; Stop watchdog timer
 			add.w	&RESULT, R15		; 5 cycles
 			add.w	&RESULT, R14		; 5 cycles
 			add.w	&RESULT, R13		; 5 cycles
-			bic.w	#DMAEN,	&DMA1CTL 	; disable DMA
-
-			mov.w 	a+2(R5), &MPY_OP1	; load new OP1
-			bis.w	#DMAEN, &DMA1CTL	; enable DMA
-			mov.w	#0, &MPY_OP2		; trigger DMA
-			nop							; warm-up time
-			nop
-			nop
 
 			add.w	&RESULT, R12
 			add.w	&RESULT, R11
-			add.w	&RESULT, R10
+			add.w	&RESULT, R10		;
+			add.w	&RESULT, R9			; 5
+			add.w	&RESULT, R8			; 5
+			add.w	&RESULT, R7			; 5
 			bic.w	#DMAEN,	&DMA1CTL 	; disable DMA
 
-			mov.w	a+4(R5), &MPY_OP1	; load new OP1
-			bis.w	#DMAEN, &DMA1CTL	; enable DMA
-			mov.w	#0, &MPY_OP2		; trigger DMA
-			nop							; warm-up time
-			nop
-			nop
-			add.w	&RESULT, R9
-			add.w	&RESULT, R8
-			add.w	&RESULT, R7
-			bic.w	#DMAEN, &DMA1CTL 	; disable DMA
+;			mov.w 	a+2(R5), &MPY_OP1	; load new OP1
+;			bis.w	#DMAEN, &DMA1CTL	; enable DMA
+;			mov.w	#0, &MPY_OP2		; trigger DMA
+;			nop							; warm-up time
+;			nop
+;			nop
+
+;			add.w	&RESULT, R12
+;			add.w	&RESULT, R11
+;			add.w	&RESULT, R10
+;			bic.w	#DMAEN,	&DMA1CTL 	; disable DMA
+
+;			mov.w	a+4(R5), &MPY_OP1	; load new OP1
+;			bis.w	#DMAEN, &DMA1CTL	; enable DMA
+;			mov.w	#0, &MPY_OP2		; trigger DMA
+;			nop							; warm-up time
+;			nop
+;			nop
+;			add.w	&RESULT, R9
+;			add.w	&RESULT, R8
+;			add.w	&RESULT, R7
+;			bic.w	#DMAEN, &DMA1CTL 	; disable DMA
 
 			nop
 			nop
