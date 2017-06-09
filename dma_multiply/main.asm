@@ -109,7 +109,7 @@ StopWDT     mov.w   #WDTPW|WDTHOLD,&WDTCTL  ; Stop watchdog timer
 ;				- word to word transfers
 ;			mov.w	#DMADT_4+DMADSTINCR_0+DMASRCINCR_3+DMASWDW+DMAEN, &DMA0CTL
 ;			mov.w	#DMADT_4+DMADSTINCR_0+DMASRCINCR_3+DMASWDW+DMAEN, &DMA1CTL
-			mov.w	#DMADT_4+DMADSTINCR_0+DMASRCINCR_3+DMASWDW+DMAEN, &DMA1CTL
+			mov.w	#DMADT_4+DMADSTINCR_0+DMASRCINCR_3+DMASWDW, &DMA1CTL
 
 
 ;			Trigger the process by multiplying 0x0. This clears the accumulator
@@ -125,43 +125,39 @@ StopWDT     mov.w   #WDTPW|WDTHOLD,&WDTCTL  ; Stop watchdog timer
 
 			mov.w	#0, R5
 
-			mov.w	a(R5), &MPY_OP1
-;			mov.w	#1, &MPY_OP1
-			mov.w	#0, &MPY_OP2
+			mov.w	a(R5), &MPY_OP1		; load new OP1
+			bis.w	#DMAEN, &DMA1CTL	; enable DMA
+			mov.w	#0, &MPY_OP2		; trigger DMA
+			nop							; warm-up time
+			nop
+			nop
+			add.w	&RESULT, R15		; 5 cycles
+			add.w	&RESULT, R14		; 5 cycles
+			add.w	&RESULT, R13		; 5 cycles
+			bic.w	#DMAEN,	&DMA1CTL 	; disable DMA
 
-;			mov.w	#0, &MPY_OP1
-;			mov.w	#0, &MPY_OP2
+			mov.w 	a+2(R5), &MPY_OP1	; load new OP1
+			bis.w	#DMAEN, &DMA1CTL	; enable DMA
+			mov.w	#0, &MPY_OP2		; trigger DMA
+			nop							; warm-up time
 			nop
 			nop
-			nop
-;			add.w	&RESULT, R15
-			add.w	&RESULT, R15
-			add.w	&RESULT, R14
-			add.w	&RESULT, R13
-;			bic.w	#DMAEN,	&DMA1CTL ; terminate the DMA
-			mov.w 	a+2(R5), &MPY_OP1
-			nop
-			nop
-			nop
+
 			add.w	&RESULT, R12
-
-;42
-
 			add.w	&RESULT, R11
-
-;51
-
 			add.w	&RESULT, R10
+			bic.w	#DMAEN,	&DMA1CTL 	; disable DMA
 
-;57
-
-			mov.w	a+4(R5), &MPY_OP1
+			mov.w	a+4(R5), &MPY_OP1	; load new OP1
+			bis.w	#DMAEN, &DMA1CTL	; enable DMA
+			mov.w	#0, &MPY_OP2		; trigger DMA
+			nop							; warm-up time
 			nop
 			nop
-			nop
-			add.w	&RESULT, R9	; 73
-			add.w	&RESULT, R8 ; 75
-			add.w	&RESULT, R7	; 84
+			add.w	&RESULT, R9
+			add.w	&RESULT, R8
+			add.w	&RESULT, R7
+			bic.w	#DMAEN, &DMA1CTL 	; disable DMA
 
 			nop
 			nop
