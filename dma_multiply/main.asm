@@ -43,6 +43,8 @@ MPY_OP1		.equ	0x04C0
 MAC_OP1		.equ	0x04C4 	; first operand for multiply-accumulate
 MPY_OP2		.equ	0x04C8
 RESULT		.equ	0x04CA
+RESULT_FPT	.equ	0x04CB	; nope, cannot read word across boundaries
+
 
 ;-------------------------------------------------------------------------------
             .text                           ; Assemble into program memory.
@@ -64,6 +66,14 @@ StopWDT     mov.w   #WDTPW|WDTHOLD,&WDTCTL  ; Stop watchdog timer
 			mov.w	#0, &MPY_OP1
 			mov.w	#0, &MPY_OP2
 			mov.w	#0, R15
+			mov.w	#0, R14
+			mov.w	#0, R13
+			mov.w	#0, R12
+			mov.w	#0, R11
+			mov.w	#0, R10
+			mov.w	#0, R9
+			mov.w	#0, R8
+			mov.w	#0, R7
 			mov.w	#0, &c
 
 ;			Set up DMA source registers
@@ -76,7 +86,8 @@ StopWDT     mov.w   #WDTPW|WDTHOLD,&WDTCTL  ; Stop watchdog timer
 ;			Set up the DMA destination registers
 ;			Higher-priority channel (a) feeds the first operand
 ;			mov.w	#c, &DMA0DAL
-			mov.w	#MAC_OP1, &DMA0DAL
+;			mov.w	#MPY_OP1, &DMA0DAL
+;			mov.w	#MAC_OP1, &DMA0DAL
 			mov.w	#0, &DMA0DAH
 ;			Lower-priority channel (b) controls the multiplier
 			mov.w	#MPY_OP2, &DMA1DAL
@@ -109,44 +120,73 @@ StopWDT     mov.w   #WDTPW|WDTHOLD,&WDTCTL  ; Stop watchdog timer
 
 			mov.w	#0,	R13
 
-			mov.w	#1, &MAC_OP1
+;			mov.w	#0xF001, &MPY_OP1
+;			mov.w	#0, &MPY_OP2
+
+			mov.w	#0, R5
+
+			mov.w	a(R5), &MPY_OP1
+;			mov.w	#1, &MPY_OP1
 			mov.w	#0, &MPY_OP2
 
 ;			mov.w	#0, &MPY_OP1
 ;			mov.w	#0, &MPY_OP2
-
-;			mov.w	#0, &MPY_OP1
-;			mov.w	#0, &MPY_OP2
-
-
 			nop
 			nop
 			nop
-			nop
-			nop
-			nop
-			nop
-			nop
-			nop
-			nop
-			nop
-			nop
-			nop
-			nop
-			nop
-			nop
-			nop
-			nop
-			nop
-			nop
-			nop
-			nop
-
+;			add.w	&RESULT, R15
 			add.w	&RESULT, R15
 			add.w	&RESULT, R14
 			add.w	&RESULT, R13
+;			bic.w	#DMAEN,	&DMA1CTL ; terminate the DMA
+			mov.w 	a+2(R5), &MPY_OP1
+			nop
+			nop
+			nop
 			add.w	&RESULT, R12
+
+;42
+
+			add.w	&RESULT, R11
+
+;51
+
 			add.w	&RESULT, R10
+
+;57
+
+			mov.w	a+4(R5), &MPY_OP1
+			nop
+			nop
+			nop
+			add.w	&RESULT, R9	; 73
+			add.w	&RESULT, R8 ; 75
+			add.w	&RESULT, R7	; 84
+
+			nop
+			nop
+			nop
+			nop
+			nop
+			nop
+			nop
+			nop
+			nop
+			nop
+			nop
+			nop
+			nop
+			nop
+			nop
+			nop
+			nop
+			nop
+			nop
+			nop
+			nop
+			nop
+
+
 
 
 			mov.w	&RESULT, R15
