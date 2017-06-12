@@ -256,9 +256,19 @@ loop_a:
 loop_b:
 
 ;			k = 0
-			MOV.W a-6(R4), &MPY_OP1
-			MOV.W b-6(R5), &MPY_OP2
-			MOV.W &RESULT, R7
+			MOV.W #a, R4
+			MOV.W #b, R5
+			MOV.W #RESULT, R6
+
+;			mov.w	@R4,R4
+
+			MOV.W @R4+, &MPY_OP1
+			MOV.W @R5+, &MPY_OP2
+;			MOV.W a-6(R4), &MPY_OP1
+;			MOV.W b-6(R5), &MPY_OP2
+
+			mov.w @R6, R7
+;			MOV.W &RESULT, R7
 			MOV.W b-4(R5), &MPY_OP2
 			MOV.W &RESULT, R8
 			MOV.W b-2(R5), &MPY_OP2
