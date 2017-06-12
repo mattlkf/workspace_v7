@@ -225,9 +225,10 @@ loop_guard_b:
 ; Loop across k
 ;-------------------------------------------------------------------------------
 
+;			jmp kernel_indexed
+			jmp kernel_indirect ;<-- 2
+;			jmp kernel_dma;<--- 2
 
-;			jmp kernel_indirect ;<-- 2
-			jmp kernel_dma;<--- 2
 kernel_return:
 
 ;-------------------------------------------------------------------------------
@@ -263,6 +264,48 @@ loop_end_a:
 
             ; Get rid of the local variables we declared
 			add.w	#(2*N_LOCALS),SP
+
+;-------------------------------------------------------------------------------
+; Kernel 0: Using indexed mode
+;-------------------------------------------------------------------------------
+
+kernel_indexed:
+			mov.w	#K, R6
+kernel_indexed_loop_k:
+			mov.w	@R5,	&MPY_OP1 ;<---3
+			mov.w	0(R4), 	&MPY_OP2
+			add.w	&RESULT,R7
+
+			mov.w	2(R4), 	&MPY_OP2
+			add.w	&RESULT,R8
+			mov.w	4(R4), 	&MPY_OP2
+			add.w	&RESULT,R9
+			mov.w	6(R4), 	&MPY_OP2
+			add.w	&RESULT,R10
+			mov.w	8(R4), 	&MPY_OP2
+			add.w	&RESULT,R11
+			mov.w	10(R4), &MPY_OP2
+			add.w	&RESULT,R12
+			mov.w	12(R4),	&MPY_OP2
+			add.w	&RESULT,R13
+			mov.w	14(R4),	&MPY_OP2
+			add.w	&RESULT,R14
+			mov.w	16(R4),	&MPY_OP2
+			add.w	&RESULT,R15
+
+			; shift a-ptr to start of next col
+			add.w 	#M2, R4	; 9*1 tile
+			; shift b-ptr to next row
+			add.w	#N2, R5
+
+			sub.w	#1, R6
+			jnz kernel_indexed_loop_k; <--- 3
+
+			; reset a and b
+			sub.w	#(M2*K), R4
+			sub.w	#(N2*K), R5
+
+			jmp kernel_return
 
 ;-------------------------------------------------------------------------------
 ; Kernel 1: Using indirect auto increment mode
