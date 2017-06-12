@@ -190,6 +190,7 @@ SECTIONS
     .data       : {} > RAM                  /* Global & static vars              */
     .TI.noinit  : {} > RAM                  /* For #pragma noinit                */
     .stack      : {} > RAM (HIGH)           /* Software system stack             */
+    .matrices	: {} > FRAM					/* Matt: for my matrices			 */
 
     .infoA     : {} > INFOA              /* MSP430 INFO FRAM  Memory segments */
     .infoB     : {} > INFOB
