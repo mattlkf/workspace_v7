@@ -2581,7 +2581,6 @@ StopWDT     mov.w   #WDTPW|WDTHOLD,&WDTCTL  ; Stop watchdog timer
 ; Main loop here
 ;-------------------------------------------------------------------------------
 main:
-
 ;			Prepare space on stack for local variables
 			sub.w	#(2*N_LOCALS), SP
 			mov.w	#c, R6
