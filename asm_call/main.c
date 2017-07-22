@@ -5,12 +5,15 @@ extern uint16_t strLen(const char* s1);
 extern int16_t plus_asm(int16_t a, int16_t b, int16_t c);
 extern int16_t self_modifying_code(int16_t x);
 extern void asm_func(int16_t x);
+extern void convolve_asm();
 
 /*
  * main.c
  */
 int main(void) {
     WDTCTL = WDTPW | WDTHOLD;	// Stop watchdog timer
+
+    convolve_asm();
 
     asm_func(3);
 

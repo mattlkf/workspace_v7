@@ -2,6 +2,7 @@
 	.global plus_asm
 	.global self_modifying_code
 	.global asm_func
+	.global convolve_asm
 strLen:
 	mov.w	#0, R13
 strLen_loop:
@@ -46,4 +47,9 @@ loop_head:
 loop_end:
 	nop
 	sub.w	#2, SP
+	ret
+
+convolve_asm:
+	pushm.w	#7, R10
+	popm.w	#7, R10
 	ret

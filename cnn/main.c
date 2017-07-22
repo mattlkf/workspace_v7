@@ -27,6 +27,10 @@ typedef struct{
   int16_t *bias;
 } dense_weights_t;
 
+
+extern void convolve_asm(layer_t *in, kernel_t *kernels, layer_t *out);
+
+
 #define MAX_BUF_SIZE 1352
 #pragma PERSISTENT(buf)
 int16_t buf[2][MAX_BUF_SIZE] = {0};
@@ -102,10 +106,10 @@ void convolve(layer_t *in, kernel_t *kernels, layer_t *out){
   // Generate each output layer by convolving the correct kernel..
 
   // Stack variables
-  int64_t s[30];
+  int16_t s[30];
   s[0] = out->z; // doubles as ok
-  // s[1] = kernels;
-  // s[2] = in->val;
+   s[1] = kernels;
+   s[2] = in->val;
   s[3] = out->x;
   s[4] = 0; // used as oi
   s[5] = out->y - 1;
@@ -123,8 +127,8 @@ void convolve(layer_t *in, kernel_t *kernels, layer_t *out){
   s[17] = ((kernel_t *) kernels) -> y;
   s[18] = 0; // reserved for kernel->bias
   s[19] = 0; // reserved for kernel->val
-  // s[20] = in->val;
-  // s[21] = out->val; // reserved for out_ptr
+   s[20] = in->val;
+   s[21] = out->val; // reserved for out_ptr
 
   // Registers:
   // 8 accumulators
@@ -287,6 +291,7 @@ void read_layer(layer_t *in){
 }
 
 int main(void){
+   volatile int prediction = 42;
    WDTCTL = WDTPW | WDTHOLD;    // Stop watchdog timer
 
 
@@ -311,12 +316,12 @@ int main(void){
   read_layer(&layer_0);
 
   // Run it..
-  convolve(&layer_0, conv_1, &layer_1);
+  convolve_asm(&layer_0, conv_1, &layer_1);
   relu(&layer_1);
-  convolve(&layer_1, conv_2, &layer_2);
+  convolve_asm(&layer_1, conv_2, &layer_2);
   relu(&layer_2);
   pool_2x2(&layer_2, &layer_3);
-  convolve(&layer_3, conv_3, &layer_4);
+  convolve_asm(&layer_3, conv_3, &layer_4);
   relu(&layer_4);
   pool_2x2(&layer_4, &layer_5);
   dense(&layer_5, &dense_1, &layer_6);
@@ -324,7 +329,7 @@ int main(void){
   dense(&layer_6, &dense_2, &layer_7);
 
   // Take the argmax of the last layer
-  int prediction = argmax(&layer_7);
+  prediction = argmax(&layer_7);
 // printf("Prediction: %d\n", prediction);
 
   return 0;
